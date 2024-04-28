@@ -1,23 +1,25 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Restaurant</title>
+    <title>建立餐廳</title>
+    <link rel="stylesheet" href="{% static 'css/create_restaurant.css' %}">
 </head>
 <body>
-    <h2>Create Restaurant</h2>
+    <h2>建立餐廳</h2>
     <form method="post">
         {% csrf_token %}
-        <label for="name">Name: </label>
+        <label for="name">餐廳名稱: </label>
         {{ form.name }}<br>
-        <label for="space_id">Space_id: </label>
+        <label for="space_id">地點: </label>
         {{ form.space_id }}<br>
-        <label for="phone_number">Phone number: </label>
+        <label for="phone_number">聯絡電話: </label>
         {{ form.phone_number }}<br>
         <label for="line_id">Line ID: </label>
         {{ form.line_id }}<br>
-        <label for="menu_list">Menu List: </label>
+        <label for="menu_list">菜單: </label>
         {{ form.menu_list}}<br>
         <button onclick="location.href='{{ add_menu_url }}'">新增餐點</button>
         <button type="submit">新增餐廳</button>

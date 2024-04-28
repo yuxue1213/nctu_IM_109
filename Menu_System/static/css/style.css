@@ -1,4 +1,3 @@
-/* styles.css */
 body {
   font-family: Arial, sans-serif;
   background-color: #f2f2f2;
@@ -12,7 +11,7 @@ body {
 .outer-container {
   max-width: 400px;
   width: 100%;
-  margin: 0 auto; /* 添加此行以水平居中 */
+  margin: 0 auto;
 }
 
 .container {

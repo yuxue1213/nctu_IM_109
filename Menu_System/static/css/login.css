@@ -3,10 +3,10 @@ body {
     background-color: #f2f2f2;
     display: flex;
     justify-content: center;
-    align-items: flex-start; /* 這將使容器從頂部開始排列 */
+    align-items: flex-start;
     height: 100vh;
     margin: 0;
-    flex-direction: column; /* 這將使子元素從上到下排列 */
+    flex-direction: column; 
 }
 
 .container {

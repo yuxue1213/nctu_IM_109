@@ -8,6 +8,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect, JsonResponse
 from utils import jwt 
 from django.utils import timezone
+from django.templatetags.static import static
 def register(request):
     if request.method == 'POST':
         form = RegisterForm(request.POST)
@@ -102,36 +103,6 @@ def order_menu(request, id):
         }
         return render(request, 'order_menu.html', context)
 
-def check_order(request, order_id):
-    order = get_object_or_404(Order, id=order_id)
-    if request.method == 'POST':   
-        if 'modify' in request.POST:
-            return redirect('order_menu', id=order.restaurant.id)
-        elif 'delete' in request.POST:
-            order.delete()
-            return redirect('home')
-        elif 'confirm' in request.POST:
-            return redirect('order_finish', id=order_id)
-    return render(request, 'check_order.html', {'order': order})
-
-def order_finish(request, order_id):
-    if request.method == 'POST':
-        member_id = Order(request.POST, id=order_id).clean_fields['member']
-        member = Member(request.POST, id=member_id)
-        return redirect('history_order', member=member)
-    return redirect('home')
-
-def history_order(request, member_id):
-    member = get_object_or_404(Member, id=member_id)
-    orders = Order.objects.filter(member=member)
-    if request.method == 'POST':
-        for order in orders:
-            if f'modify_{order.id}' in request.POST:
-                return redirect('order_menu', id=order.restaurant.id)
-            elif f'delete_{order.id}' in request.POST:
-                order.delete()
-    return render(request, 'history_orders.html', {'orders': orders})
-
 def create_restaurant(request):
     if request.method == 'POST':
         form = RestaurantCreateForm(request.POST)
@@ -142,7 +113,6 @@ def create_restaurant(request):
             print("Save this restaurant")
             return redirect('add_menu_list', restaurant_id=restaurant.id) 
         else:
-            print(form.errors)
             messages.error(request, "Error creating the restaurant. Please check the form data.")
     else:
         form = RestaurantCreateForm()
@@ -152,10 +122,12 @@ def add_menu_list(request, restaurant_id):
     restaurant = get_object_or_404(Restaurant, id=restaurant_id)
     menu_list = restaurant.menu_list if isinstance(restaurant.menu_list, dict) else {}
     menu_data = menu_list.get("data", [])
+    default_image_url = static('images/50嵐.png')
 
     return render(request, 'add_menu.html', 
                   {'restaurant': restaurant,
-                    'menu_list': menu_data})
+                   'menu_list': menu_data,
+                   'default_image_url': default_image_url})
 
 def update_menu_item(request):
     if request.method == 'POST':
@@ -165,7 +137,6 @@ def update_menu_item(request):
         price = request.POST.get('price')
         tag = request.POST.get('tag')
         try:
-            print('trying')
             restaurant = Restaurant.objects.get(id=restaurant_id)
             menu_list = restaurant.menu_list
             item_id = int(item_id) 
@@ -180,32 +151,46 @@ def update_menu_item(request):
             print('update success')
             return JsonResponse({'message': 'Menu item updated successfully'})
         except Exception as e:
-            print('expect')
             return JsonResponse({'error': str(e)}, status=500)
 
     return JsonResponse({'error': 'Invalid request method'}, status=400)
 
 def add_menu_item(request):
-    restaurant_id = request.POST.get('restaurant_id')
-    print(restaurant_id)
-    if request.method == 'POST':
-        print("POST")
-        # form = MenuItemForm(request.POST, request.FILES)
-        # if form.is_valid():
-        #     menu_item = form.save()
-        #     return JsonResponse({'message': 'Item added successfully'})
-        # else:
-            # return JsonResponse({'error': form.errors}, status=400)
+    if request.method == 'POST':    
+        restaurant_id = request.POST.get('restaurant_id')
+        item_name = request.POST.get('name')
+        item_price = request.POST.get('price')
+        item_tag = request.POST.get('tag')
+        item_photo = request.POST.get('photo')
+        print(item_photo)
+        restaurant = get_object_or_404(Restaurant, id=restaurant_id)
+        # default_image_url = static('images/50嵐.png')
+
+        if restaurant:
+            menu_list = restaurant.menu_list
+
+            new_item_id = len(menu_list['data']) + 1
+            add_item = {
+                "name": item_name,
+                "price": item_price,
+                "tag": item_tag,
+                "photo": item_photo, 
+                "status": "on",
+                "id": new_item_id
+            }
+
+            menu_list['data'].append(add_item)
+            restaurant.menu_list = menu_list
+            restaurant.save()
+        
+            return JsonResponse({'message': 'Item added successfully'})
     return JsonResponse({'error': 'Invalid request'}, status=400)
 
 def delete_menu_item(request):
     if request.method == 'POST':
         restaurant_id = request.POST.get('restaurant_id')
-        print(f"restaurant_id: {restaurant_id}")
         item_id = request.POST.get('item_id')
-        print(f"item_id: {item_id}")
         try:
-            print('trying')
             restaurant = Restaurant.objects.get(id=restaurant_id)
             menu_list = restaurant.menu_list
             item_id = int(item_id) 
@@ -214,16 +199,12 @@ def delete_menu_item(request):
                     item['status'] = 'delete'
                     break
             restaurant.menu_list = menu_list
-            print(restaurant.menu_list)
             restaurant.save()
             print('Delete success')
             return JsonResponse({'message': 'Menu item delete successfully'})
         except Exception as e:
-            print('expect')
             return JsonResponse({'error': str(e)}, status=500)
-
     return JsonResponse({'error': 'Invalid request method'}, status=400)
-
 
 def search_restaurants(request):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
@@ -234,11 +215,13 @@ def search_restaurants(request):
     return JsonResponse({'error': 'Not Ajax request'}, status=400)
 
 def delete_all_restaurants(request):
-    try:
-        Restaurant.objects.all().delete()
-        return JsonResponse({'message': 'All restaurants have been successfully deleted.'}, status=200)
-    except Exception as e:
-        return JsonResponse({'error': str(e)}, status=500)
+    if request.method == 'POST':
+        try:
+            Restaurant.objects.all().delete()
+            return JsonResponse({'message': 'All restaurants have been successfully deleted.'}, status=200)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    return JsonResponse({'error': str(e)}, status=500)
 
 def delete_restaurant(request):
     restaurant_id = request.POST.get('restaurant_id')
@@ -274,7 +257,7 @@ def add_company(request):
         form = CompanyForm(request.POST)
         if form.is_valid():
             company = form.save(commit=False)
-            company.members = []  # Or set some initial value based on your business logic
+            company.members = []  
             company.save()
             return redirect('company_list')
     else:
@@ -308,6 +291,15 @@ def edit_order(request, order_id):
 
     return render(request, 'edit_order.html', {'form': form, 'order': order})
 
+def order_completed(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+    return render(request, 'order_completed.html', {'order': order})
+
+@jwt.jwt_required
+def order_list(request):
+    orders = Order.objects.all()
+    return render(request, 'order_list.html', {'orders': orders})
+
 @jwt.jwt_required
 def admin_home(request):
     user_info = getattr(request, 'user_info', None) 
@@ -323,4 +315,3 @@ def admin_home(request):
     else:
         restaurant = Restaurant.objects.all
         return render(request, 'admin_home.html', {"restaurants": restaurant})
-

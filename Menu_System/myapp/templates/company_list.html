@@ -1,18 +1,20 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Company List</title>
+    <title>公司列表</title>
+    <link rel="stylesheet" href="{% static 'css/company_list.css' %}">
 </head>
 <body>
-    <h1>Company List</h1>
+    <h1>公司列表</h1>
     <a href="{% url 'home'  %}">回到點餐主頁</a>
     <ul>
         {% for company in companies %}
             <li>{{ company.name }}</li>
         {% endfor %}
     </ul>
-    <a href="{% url 'add_company' %}">Add New Company</a>
+    <a href="{% url 'add_company' %}">加入新公司</a>
 </body>
 </html>

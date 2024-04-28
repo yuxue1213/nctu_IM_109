@@ -6,9 +6,6 @@ urlpatterns = [
     path('register/', views.register, name='register'),
     path('home', views.select_restaurant, name='home'),
     path('restaurant/order_menu/<int:id>/', views.order_menu, name='order_menu'),
-    path('check_order/<int:order_id>/', views.check_order, name='check_order'),
-    path('order_finish/<int:order_id>/', views.order_finish, name='order_finish'),
-    path('history_order/<int:member_id>', views.history_order, name='history_order'),
     path('create_restaurant', views.create_restaurant, name='create_restaurant'),
     path('add_menu_list/<int:restaurant_id>/', views.add_menu_list, name='add_menu_list'),
     path('add_menu_item/', views.add_menu_item, name='add_menu_item'),
@@ -24,4 +21,6 @@ urlpatterns = [
     path('check_order/<int:order_id>/', views.check_order, name='check_order'),
     path('edit_order/<int:order_id>/', views.edit_order, name='edit_order'),
     path('admin_home', views.admin_home, name='admin_home'),
+    path('order_completed/<int:order_id>/', views.order_completed, name='order_completed'),
+    path('order_list/', views.order_list, name='order_list')
 ]

@@ -17,17 +17,18 @@
         {% for restaurant in restaurants %}
             <li>
                 <a href="{% url 'order_menu' restaurant.id %}">{{ restaurant.name }}</a>
-                <div>id {{restaurant.id}}</div>
-                <div>space_id {{restaurant.space_id}}</div>
-                <div>phone_number {{restaurant.phone_number}}</div>
-                <div>line_id {{restaurant.line_id}}</div>
-                <div>menu_list {{restaurant.menu_list}}</div>
-                <div>orders {{restaurant.orders}}</div>
-                <div>created_at {{restaurant.created_at}}</div>
+                <p>餐廳編號 {{restaurant.id}}</p>
+                <p>地點 {{restaurant.space_id}}</p>
+                <p>聯絡電話 {{restaurant.phone_number}}</p>
+                <p>Line ID {{restaurant.line_id}}</p>
+                <p>菜單 {{restaurant.menu_list}}</p>
+                <p>訂單 {{restaurant.orders}}</p>
+                <p>建立時間 {{restaurant.created_at}}</p>
                 <button class="delete-btn" data-id="{{ restaurant.id }}">删除餐廳</button>
                 <button class="update-btn" data-id="{{ restaurant.id }}"><a href="{% url 'add_menu_list' restaurant.id %}" class="btn update-btn">修改菜單</a></button>
             </li>
         {% endfor %}
+        <div><button class="delete-btn delete-all-btn">删除所有餐廳</button></div>
     </ul>
     <script>
     $(document).ready(function(){
@@ -55,7 +56,49 @@
                 $('#restaurant-list').empty();
             }
         });
-        
+
+       
+        $('.delete-btn').click(function() {
+            let restaurant_id = $(this).data('id'); 
+            if (confirm('要刪除餐廳？')) {
+                $.ajax({
+                    type: 'POST',
+                    url: '{% url "delete_restaurant" %}',
+                    data: {
+                        'restaurant_id': restaurant_id,
+                        'csrfmiddlewaretoken': $('#csrfToken').val() 
+                    },
+                    success: function(data) {
+                        alert('刪除餐聽成功');
+                        location.reload();  
+                    },
+                    error: function(xhr, status, error) {
+                        alert('删除失败，请重试');
+                    }
+                });
+            }
+        });
+
+        $('.delete-all-btn').click(function() {
+            let restaurant_id = $(this).data('id'); 
+            if (confirm('確定要刪除所有餐廳？刪除後無法再做復原')) {
+                $.ajax({
+                    type: 'POST',
+                    url: '{% url "delete_all_restaurants" %}',
+                    data: {
+                        'csrfmiddlewaretoken': $('#csrfToken').val() 
+                    },
+                    success: function(data) {
+                        alert('刪除所有餐聽成功');
+                        location.reload();  
+                    },
+                    error: function(xhr, status, error) {
+                        alert('删除失败');
+                    }
+                });
+            }
+        });
+
     });
     </script>
 </body>

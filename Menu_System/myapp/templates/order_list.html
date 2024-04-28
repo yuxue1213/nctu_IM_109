@@ -1,0 +1,32 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>訂單列表</title>
+    <link rel="stylesheet" href="{% static 'css/order_list.css' %}">
+</head>
+<body>
+    <h1>訂單列表</h1>
+    <a href="{% url 'home'  %}">回到點餐主頁</a>
+        {% for order in orders %}
+        <div>
+            <div><p>訂單內容：</p>
+                {% for item in order.items %}
+                <a>餐點名稱：{{ item.name }}</a>
+                <a>餐點單價：{{ item.price }}</a>
+                <a>餐點數量：{{ item.amount }}</a>
+                <a>餐點分類：{{ item.tag }}</a>
+                <p></p>
+                {% endfor %}
+            </div>
+            <p>訂單價格：{{ order.order_value }}</p>
+            <p>餐廳名稱：{{ order.restaurant.name }}</p>
+            <p>訂單狀態：{{ order.status }}</p>
+            <p>建立時間：{{ order.created_at }}</p>
+        </div>
+        {% endfor %}        
+    <a href="{% url 'home' %}">回到點餐主頁</a>
+</body>
+</html>

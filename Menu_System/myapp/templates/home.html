@@ -17,13 +17,13 @@
         {% for restaurant in restaurants %}
             <li>
                 <a href="{% url 'order_menu' restaurant.id %}">{{ restaurant.name }}</a>
-                <div>id {{restaurant.id}}</div>
-                <div>space_id {{restaurant.space_id}}</div>
-                <div>phone_number {{restaurant.phone_number}}</div>
-                <div>line_id {{restaurant.line_id}}</div>
-                <div>menu_list {{restaurant.menu_list}}</div>
-                <div>orders {{restaurant.orders}}</div>
-                <div>created_at {{restaurant.created_at}}</div>
+                <div>餐廳編號： {{restaurant.id}}</div>
+                <div>地點： {{restaurant.space_id}}</div>
+                <div>聯絡電話： {{restaurant.phone_number}}</div>
+                <div>Line ID {{restaurant.line_id}}</div>
+                <div>菜單 {{restaurant.menu_list}}</div>
+                <div>訂單 {{restaurant.orders}}</div>
+                <div>建立時間 {{restaurant.created_at}}</div>
             </li>
         {% endfor %}
     </ul>

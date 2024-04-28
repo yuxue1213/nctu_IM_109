@@ -36,12 +36,6 @@ class RestaurantForm(forms.ModelForm):
         model = Restaurant
         fields = ['name', 'space_id', 'phone_number', 'line_id', 'menu_list', 'orders']
 
-class RestaurantSelectForm(forms.ModelForm):
-    class Meta:
-        model = Restaurant
-        fields = ['name']
-
-
 class RestaurantCreateForm(forms.ModelForm):
     class Meta:
         model = Restaurant
