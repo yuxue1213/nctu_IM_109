@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>檢查訂單</title>
+</head>
+<body>
+    <h1>訂單細項</h1>
+    <p><strong>訂單編號</strong> {{ order.id }}</p>
+    <p><strong>總價格</strong> {{ order.order_value }} 元</p>
+    <p><strong>訂單狀態</strong> {{ order.status }}</p>
+    <p><strong>明細</strong></p>
+    <ul>
+        {% for item in order.items %}
+            <li> 品名 {{ item.name }}  數量 {{ item.amount }} 份 總價 ${{ item.price }} (產品分類: {{ item.tag }})</li>
+        {% endfor %}
+    </ul>
+
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" name="edit">編輯訂單</button>
+        <button type="submit" name="complete">完成訂單</button>
+    </form>
+
+    <a href="{% url 'home' %}">回到訂單</a>
+</body>
+</html>

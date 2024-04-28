@@ -1,0 +1,62 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>管理後臺</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+</head>
+<body>
+    <input type="hidden" id="csrfToken" value="{{ csrf_token }}">
+    <h1>管理後臺</h1>
+    <input type="text" name="search_keyword" placeholder="請輸入餐廳名稱">
+    <div>餐廳列表</div>
+    <ul id="restaurant-list">
+        {% for restaurant in restaurants %}
+            <li>
+                <a href="{% url 'order_menu' restaurant.id %}">{{ restaurant.name }}</a>
+                <div>id {{restaurant.id}}</div>
+                <div>space_id {{restaurant.space_id}}</div>
+                <div>phone_number {{restaurant.phone_number}}</div>
+                <div>line_id {{restaurant.line_id}}</div>
+                <div>menu_list {{restaurant.menu_list}}</div>
+                <div>orders {{restaurant.orders}}</div>
+                <div>created_at {{restaurant.created_at}}</div>
+                <button class="delete-btn" data-id="{{ restaurant.id }}">删除餐廳</button>
+                <button class="update-btn" data-id="{{ restaurant.id }}"><a href="{% url 'add_menu_list' restaurant.id %}" class="btn update-btn">修改菜單</a></button>
+            </li>
+        {% endfor %}
+    </ul>
+    <script>
+    $(document).ready(function(){
+
+        $('input[name="search_keyword"]').on('input', function() {
+            var inputVal = $(this).val();
+            $.ajax({
+                url: '{% url "search_restaurants" %}',
+                data: {
+                    'term': inputVal
+                },
+                dataType: 'json',
+                success: function(data) {
+                    var newList = $('<ul>');
+                    $.each(data, function(index, item) {
+                        newList.append($('<li>').append($('<a>').attr('href', '/order_menu/' + item.id).text(item.label)));
+                    });
+                    $('#restaurant-list').html(newList);
+                },
+                error: function() {
+                    $('#restaurant-list').html('<ul><li>搜索錯誤，請重試。</li></ul>');
+                }
+            });
+            if (inputVal.length === 0) {
+                $('#restaurant-list').empty();
+            }
+        });
+        
+    });
+    </script>
+</body>
+</html>

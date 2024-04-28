@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Menu List</title>
+</head>
+<body>
+    <h2>Create Menu List</h2>
+    <form method="post">
+        {% csrf_token %}
+        <div>{{ form.tag }}</div>
+        <label for="name">Name: </label>
+        {{ form.name }}<br>
+        <label for="menu_list">Name: </label>
+        {{ form.menu_list }}<br>
+        <label for="menu_list">Price: </label>
+        {{ form.menu_list }}<br>
+        <button type="button" id="add_menu_item">編輯</button>
+        <button type="button" id="add_menu_item">刪除</button>
+    </form>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.1/dist/umd/popper.min.js" integrity="sha384-W8fXfP3gkOKtndU4JGtKDvXbO53Wy8SZCQHczT5FMiiqmQfUpWbYdTil/SxwZgAN" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.min.js" integrity="sha384-skAcpIdS7UcVUC05LJ9Dxay8AXcDYfBJqt1CJ85S/CFujBsIzCIv+l9liuYLaMQ/" crossorigin="anonymous"></script>
+</html>

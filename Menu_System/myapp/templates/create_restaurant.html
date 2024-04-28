@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Restaurant</title>
+</head>
+<body>
+    <h2>Create Restaurant</h2>
+    <form method="post">
+        {% csrf_token %}
+        <label for="name">Name: </label>
+        {{ form.name }}<br>
+        <label for="space_id">Space_id: </label>
+        {{ form.space_id }}<br>
+        <label for="phone_number">Phone number: </label>
+        {{ form.phone_number }}<br>
+        <label for="line_id">Line ID: </label>
+        {{ form.line_id }}<br>
+        <label for="menu_list">Menu List: </label>
+        {{ form.menu_list}}<br>
+        <button onclick="location.href='{{ add_menu_url }}'">新增餐點</button>
+        <button type="submit">新增餐廳</button>
+    </form>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.1/dist/umd/popper.min.js" integrity="sha384-W8fXfP3gkOKtndU4JGtKDvXbO53Wy8SZCQHczT5FMiiqmQfUpWbYdTil/SxwZgAN" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.min.js" integrity="sha384-skAcpIdS7UcVUC05LJ9Dxay8AXcDYfBJqt1CJ85S/CFujBsIzCIv+l9liuYLaMQ/" crossorigin="anonymous"></script>
+</html>
