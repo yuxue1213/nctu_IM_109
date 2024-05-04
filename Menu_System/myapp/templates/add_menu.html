@@ -20,10 +20,10 @@
                 <p class="mb-0">$ {{ item.price }}</p>
             </div>
             <div class="col-md-4">
-                {% if item.image_url %}
-                    <img src="{{ item.photo }}" alt="Menu item image" class="img-fluid">
+                {% if item.photo %}
+                <img src="{% static item.photo %}" alt="{{ item.name }}" class="img-fluid">
                 {% else %}
-                    <img src="{% static 'image/AnyConv.com__乾拌意麵.jpg' %}" alt="Default Menu item image" class="img-fluid">
+                <img src="{% static 'image/AnyConv.com__乾拌意麵.jpg' %}" alt="Default Menu item image" class="img-fluid">
                 {% endif %}
             </div>
             <div class="col-md-4">
@@ -47,6 +47,98 @@
                 </button>
             </div>
         </div>
+
+        <div class="modal fade" id="addMenuItemModal" tabindex="-1" aria-labelledby="addMenuItemModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addMenuItemModalLabel">新增餐點</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="add-menu-item-form">
+                            <div class="mb-3">
+                                <label for="itemName" class="form-label">餐點名稱:</label>
+                                <input type="text" class="form-control" id="itemName" name="name" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="itemPrice" class="form-label">價格:</label>
+                                <input type="number" class="form-control" id="itemPrice" name="price" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="itemTag" class="form-label">類別:</label>
+                                <input type="text" class="form-control" id="itemTag" name="tag" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="itemPhoto" class="form-label">上傳圖片（可選）:</label>
+                                <input type="file" class="form-control" id="itemPhoto" name="photo" accept="image/*">
+                            </div>
+                            <input type="hidden" id="restaurantId" name="restaurant_id" value="{{ restaurant.id }}">
+                            <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+                            <button type="submit" class="btn btn-primary">新增</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="modal fade" id="editModal-{{ item.id }}" tabindex="-1"
+            aria-labelledby="editModalLabel-{{ item.id }}" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editModalLabel-{{ item.id }}">
+                            編輯餐點
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form class="edit-form">
+                            <input type="hidden" name="item_id" value="{{ item.id }}">
+                            <div class="mb-3">
+                                <label class="form-label">餐點名稱: </label>
+                                <input type="text" class="form-control" name="name" value="{{ item.name }}">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">價格: </label>
+                                <input type="number" class="form-control" name="price" value="{{ item.price }}">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">分類: </label>
+                                <input type="text" class="form-control" name="tag" value="{{ item.tag }}">
+                            </div>
+                            <button type="submit" class="btn btn-primary">儲存</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="deleteModal-{{ item.id }}" tabindex="-1"
+            aria-labelledby="deleteModalLabel-{{ item.id }}" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="deleteModalLabel-{{ item.id }}">刪除餐點</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>確定要刪除餐點?</p>
+                        <p>餐點名稱: {{ item.name }}</p>
+                        <p>價格: ${{ item.price }}</p>
+                        <p>分類: {{ item.tag }}</p>
+                        <form id="deleteForm-{{ item.id }}" method="POST" action="/delete_menu_item/">
+                            {% csrf_token %}
+                            <input type="hidden" name="item_id" value="{{ item.id }}">
+                            <input type="hidden" name="restaurant_id" value="{{ restaurant.id }}">
+                            <button type="submit" class="btn btn-danger">刪除</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         {% endif %}
         {% endfor %}
     </div>

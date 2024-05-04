@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="{% static 'css/check_order.css' %}"> 
 </head>
 <body>
-    <h1>訂單細項</h1>
+    <h1>我的訂單</h1>
     <p><strong>訂單編號</strong> {{ order.id }}</p>
     <p><strong>總價格</strong> {{ order.order_value }} 元</p>
     <p><strong>訂單狀態</strong> {{ order.status }}</p>
@@ -21,10 +21,11 @@
 
     <form method="post">
         {% csrf_token %}
-        <button type="submit" name="edit">編輯訂單</button>
+        <!-- <button type="submit" name="edit">編輯訂單</button> -->
+        <button type="submit" name="edit">儲存並點下一家</button>
         <button type="submit" name="complete">完成訂單</button>
     </form>
 
-    <a href="{% url 'home' %}">回到訂單</a>
+    <a href="{% url 'home' %}">回到首頁</a>
 </body>
 </html>

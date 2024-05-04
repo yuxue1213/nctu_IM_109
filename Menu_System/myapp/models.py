@@ -43,6 +43,7 @@ class Account(AbstractBaseUser, PermissionsMixin):
 class Restaurant(models.Model):
     name = models.CharField(max_length=255)
     space_id = models.IntegerField()
+    area = models.CharField(max_length=255, default='A')
     phone_number = models.CharField(max_length=20)
     line_id = models.CharField(max_length=255)
     menu_list = JSONField()

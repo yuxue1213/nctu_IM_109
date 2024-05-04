@@ -34,33 +34,33 @@ class RegisterForm(UserCreationForm):
 class RestaurantForm(forms.ModelForm):
     class Meta:
         model = Restaurant
-        fields = ['name', 'space_id', 'phone_number', 'line_id', 'menu_list', 'orders']
+        fields = ['name', 'space_id', 'phone_number', 'line_id', 'menu_list', 'orders','area']
 
 class RestaurantCreateForm(forms.ModelForm):
     class Meta:
         model = Restaurant
-        fields = ['name', 'space_id', 'phone_number', 'line_id', 'menu_list']
+        fields = ['name', 'space_id', 'phone_number', 'line_id','area']
 
-    def clean_menu_list(self):
-        menu_list = self.cleaned_data.get('menu_list', '')
-        new_data = []
-        try:
-            if not isinstance(menu_list, dict) or 'data' not in menu_list:
-                raise ValidationError("Invalid format for menu_list. Expected a dictionary containing a 'data' key.")
+    # def clean_menu_list(self):
+    #     menu_list = self.cleaned_data.get('menu_list', '')
+    #     new_data = []
+    #     try:
+    #         if not isinstance(menu_list, dict) or 'data' not in menu_list:
+    #             raise ValidationError("Invalid format for menu_list. Expected a dictionary containing a 'data' key.")
 
-            for item in menu_list['data']:
-                if not all(k in item for k in ['name', 'price', 'tag', 'status']):
-                    raise ValidationError("Each item in 'data' must contain 'name', 'price', 'tag', and 'status'.")
+    #         for item in menu_list['data']:
+    #             if not all(k in item for k in ['name', 'price', 'tag', 'status']):
+    #                 raise ValidationError("Each item in 'data' must contain 'name', 'price', 'tag', and 'status'.")
                 
-                item['id'] = menu_list['data'].index(item) + 1
-                new_data.append(item)
-                print(item['id'])
-            menu_list['data'] = new_data 
-        except json.JSONDecodeError:
-            raise ValidationError("menu_list must be a valid JSON string.")
+    #             item['id'] = menu_list['data'].index(item) + 1
+    #             new_data.append(item)
+    #             print(item['id'])
+    #         menu_list['data'] = new_data 
+    #     except json.JSONDecodeError:
+    #         raise ValidationError("menu_list must be a valid JSON string.")
 
-        print("OK")
-        return menu_list
+    #     print("OK")
+    #     return menu_list
 
 class OrderForm(forms.ModelForm):
     class Meta:

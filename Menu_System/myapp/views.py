@@ -9,6 +9,8 @@ from django.http import HttpResponseRedirect, JsonResponse
 from utils import jwt 
 from django.utils import timezone
 from django.templatetags.static import static
+from django.core.files.storage import FileSystemStorage
+from django.views.decorators.http import require_http_methods
 def register(request):
     if request.method == 'POST':
         form = RegisterForm(request.POST)
@@ -57,12 +59,10 @@ def select_restaurant(request):
     
 @jwt.jwt_required
 def order_menu(request, id):
-    print(id)
     restaurant = get_object_or_404(Restaurant, id=id)
-    print(restaurant.id)
     user_info = getattr(request, 'user_info', None)
     member_id = user_info['id']
-    print(member_id)
+    order_item_tag = set(item['tag'] for item in restaurant.menu_list['data'])
     if request.method == 'POST':
         order_items = []
         total_price = 0
@@ -99,7 +99,8 @@ def order_menu(request, id):
         context = {
             'member': member_id,
             'restaurant': restaurant,
-            'menu_list': restaurant.menu_list
+            'menu_list': restaurant.menu_list,
+            'order_item_tag': order_item_tag
         }
         return render(request, 'order_menu.html', context)
 
@@ -109,6 +110,7 @@ def create_restaurant(request):
         if form.is_valid():
             restaurant = form.save(commit=False)
             restaurant.orders = {}
+            restaurant.menu_list = {"data":[]}
             restaurant.save()
             print("Save this restaurant")
             return redirect('add_menu_list', restaurant_id=restaurant.id) 
@@ -133,6 +135,7 @@ def update_menu_item(request):
     if request.method == 'POST':
         restaurant_id = request.POST.get('restaurant_id')
         item_id = request.POST.get('item_id')
+        print(item_id)
         name = request.POST.get('name')
         price = request.POST.get('price')
         tag = request.POST.get('tag')
@@ -161,10 +164,21 @@ def add_menu_item(request):
         item_name = request.POST.get('name')
         item_price = request.POST.get('price')
         item_tag = request.POST.get('tag')
-        item_photo = request.POST.get('photo')
-        print(item_photo)
+        item_photo = request.FILES.get('photo')
+        item_photo= request.FILES['photo'] if 'photo' in request.FILES else None
         restaurant = get_object_or_404(Restaurant, id=restaurant_id)
-        # default_image_url = static('images/50嵐.png')
+
+        if item_photo:
+            print('Success loading image')
+            fs = FileSystemStorage(location='static/image')
+            filename = fs.save(item_photo.name, item_photo)
+            uploaded_file_url = fs.url("Menu_System\static\image")
+
+            extension = item_photo.name.split('.')[-1]
+            filename = f"{item_name}.{extension}"
+            filename = fs.save(filename, item_photo)
+            uploaded_file_url = fs.url(filename)
+            print(uploaded_file_url)
 
         if restaurant:
             menu_list = restaurant.menu_list
@@ -174,7 +188,7 @@ def add_menu_item(request):
                 "name": item_name,
                 "price": item_price,
                 "tag": item_tag,
-                "photo": item_photo, 
+                "photo": "/image"+ uploaded_file_url, 
                 "status": "on",
                 "id": new_item_id
             }
@@ -190,20 +204,19 @@ def delete_menu_item(request):
     if request.method == 'POST':
         restaurant_id = request.POST.get('restaurant_id')
         item_id = request.POST.get('item_id')
-        try:
-            restaurant = Restaurant.objects.get(id=restaurant_id)
-            menu_list = restaurant.menu_list
-            item_id = int(item_id) 
-            for item in menu_list['data']:
-                if int(item['id']) == item_id:
-                    item['status'] = 'delete'
-                    break
-            restaurant.menu_list = menu_list
-            restaurant.save()
-            print('Delete success')
-            return JsonResponse({'message': 'Menu item delete successfully'})
-        except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
+
+        restaurant = Restaurant.objects.get(id=restaurant_id)
+        menu_list = restaurant.menu_list
+        item_id = int(item_id) 
+        for item in menu_list['data']:
+            if int(item['id']) == item_id:
+                item['status'] = 'delete'
+                break
+        restaurant.menu_list = menu_list
+        restaurant.save()
+        print('Delete success')
+        return redirect('add_menu_list', restaurant_id=restaurant_id)
+
     return JsonResponse({'error': 'Invalid request method'}, status=400)
 
 def search_restaurants(request):
@@ -298,7 +311,28 @@ def order_completed(request, order_id):
 @jwt.jwt_required
 def order_list(request):
     orders = Order.objects.all()
-    return render(request, 'order_list.html', {'orders': orders})
+    orders_with_member_name = []
+
+    for order in orders:
+        member_name = Member.objects.filter(name=order.member).first().name if Member.objects.filter(name=order.member).exists() else "未知會員"
+        order_data = {
+            'id': order.id,
+            'items': order.items,
+            'order_value': order.order_value,
+            'restaurant_name': order.restaurant.name,
+            'member_name': member_name,
+            'company': order.company,
+            'status': order.status,
+            'last_update_time': order.last_update_time,
+            'updated_at': order.updated_at,
+            'created_at': order.created_at
+        }
+        orders_with_member_name.append(order_data)
+
+    return render(request, 'order_list.html', {'orders': orders_with_member_name})
+
+
+
 
 @jwt.jwt_required
 def admin_home(request):
@@ -315,3 +349,17 @@ def admin_home(request):
     else:
         restaurant = Restaurant.objects.all
         return render(request, 'admin_home.html', {"restaurants": restaurant})
+
+def get_restaurants_by_area(request):
+    area = request.GET.get('area')
+    print(area)
+    if area:
+        restaurants = Restaurant.objects.all().values('id','name', 'space_id', 'phone_number', 'line_id')
+        print("All restaurants data:", list(restaurants))  
+        restaurants = Restaurant.objects.filter(area=area).values('id','name', 'space_id', 'phone_number', 'line_id')
+        return JsonResponse(list(restaurants), safe=False)
+    else:
+        restaurants = Restaurant.objects.all().values('id','name', 'space_id', 'phone_number', 'line_id')
+        print("All restaurants data:", list(restaurants))  
+
+        return JsonResponse(list(restaurants), safe=False)

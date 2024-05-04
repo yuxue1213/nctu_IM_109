@@ -22,5 +22,6 @@ urlpatterns = [
     path('edit_order/<int:order_id>/', views.edit_order, name='edit_order'),
     path('admin_home', views.admin_home, name='admin_home'),
     path('order_completed/<int:order_id>/', views.order_completed, name='order_completed'),
-    path('order_list/', views.order_list, name='order_list')
+    path('order_list/', views.order_list, name='order_list'),
+    path('restaurants_by_area/', views.get_restaurants_by_area, name='restaurants_by_area'),
 ]

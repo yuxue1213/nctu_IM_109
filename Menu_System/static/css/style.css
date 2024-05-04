@@ -21,3 +21,17 @@ body {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   text-align: center;
 }
+body {
+  font-size: 30px; /* 或其他你希望的大小 */
+}
+h2 {
+    font-size: 50px; /* 标题字体大小 */
+}
+
+form input, form button {
+    font-size: 24px; /* 表单输入和按钮的字体大小 */
+}
+
+a {
+    font-size: 24px; /* 链接的字体大小 */
+}

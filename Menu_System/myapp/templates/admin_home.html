@@ -14,6 +14,7 @@
     <input type="text" name="search_keyword" placeholder="請輸入餐廳名稱">
     <div>餐廳列表</div>
     <ul id="restaurant-list">
+        <div><button class="add-btn"><a href="create_restaurant">新增餐廳</a></button></div>
         {% for restaurant in restaurants %}
             <li>
                 <a href="{% url 'order_menu' restaurant.id %}">{{ restaurant.name }}</a>

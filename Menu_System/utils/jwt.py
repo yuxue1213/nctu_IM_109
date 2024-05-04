@@ -10,7 +10,7 @@ def generate_jwt(user):
         'name': user.name,
         'account': user.account,
         'phone_number': user.phone_number,
-        'exp': datetime.datetime.now(datetime.UTC) + datetime.timedelta(days=2),  # Token expires in 2 days
+        'exp': datetime.datetime.now(datetime.UTC) + datetime.timedelta(days=2), 
         'iat': datetime.datetime.now(datetime.UTC)
     }
     token = jwt.encode(payload, settings.SECRET_KEY, algorithm='HS256')
@@ -28,12 +28,12 @@ def decode_jwt(token):
 def jwt_required(f):
     @wraps(f)
     def decorated_function(request, *args, **kwargs):
-        token = request.COOKIES.get('jwt')  # 从 Cookie 获取 token，或者从 request.headers.get('Authorization')
+        token = request.COOKIES.get('jwt')  
         if token:
             try:
-                # 解码 JWT
+    
                 decoded = jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])
-                request.user_info = decoded  # 将解码信息存储在 request 中
+                request.user_info = decoded  
             except jwt.ExpiredSignatureError:
                 return HttpResponse("Token has expired", status=401)
             except jwt.InvalidTokenError:
