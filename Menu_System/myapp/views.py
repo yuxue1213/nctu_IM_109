@@ -178,17 +178,20 @@ def add_menu_item(request):
             filename = f"{item_name}.{extension}"
             filename = fs.save(filename, item_photo)
             uploaded_file_url = fs.url(filename)
-            print(uploaded_file_url)
+        else:
+            uploaded_file_url = None
 
         if restaurant:
+            print("Success")
             menu_list = restaurant.menu_list
-
+        
             new_item_id = len(menu_list['data']) + 1
             add_item = {
                 "name": item_name,
                 "price": item_price,
                 "tag": item_tag,
-                "photo": "/image"+ uploaded_file_url, 
+                # "photo": "/image"+ uploaded_file_url, 
+                **({"photo": "/image" + uploaded_file_url} if uploaded_file_url else {}),
                 "status": "on",
                 "id": new_item_id
             }
