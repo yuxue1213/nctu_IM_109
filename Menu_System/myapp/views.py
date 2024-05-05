@@ -10,7 +10,9 @@ from utils import jwt
 from django.utils import timezone
 from django.templatetags.static import static
 from django.core.files.storage import FileSystemStorage
-from django.views.decorators.http import require_http_methods
+
+
+#
 def register(request):
     if request.method == 'POST':
         form = RegisterForm(request.POST)
@@ -41,6 +43,24 @@ def user_login(request):
 
     return render(request, 'login.html', {'form': form})
 
+def admin_login(request):
+    if request.method == 'POST':
+        form = CustomAuthForm(request, data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            login(request, user)
+
+            token = jwt.generate_jwt(user)
+            response = redirect('admin_home')
+            response.set_cookie(key='jwt', value=token, httponly=True, samesite='Lax')
+            return response
+
+    else:
+        form = CustomAuthForm()
+
+    return render(request, 'admin_login.html', {'form': form})
+
+
 @jwt.jwt_required
 def select_restaurant(request):
     user_info = getattr(request, 'user_info', None) 
@@ -61,19 +81,22 @@ def select_restaurant(request):
 def order_menu(request, id):
     restaurant = get_object_or_404(Restaurant, id=id)
     user_info = getattr(request, 'user_info', None)
-    member_id = user_info['id']
-    order_item_tag = set(item['tag'] for item in restaurant.menu_list['data'])
+    member_id = user_info['name']
+    order_item_tag = set(item['tag'] for item in restaurant.menu_list['data'] if item['status'] != 'delete')
+
     if request.method == 'POST':
         order_items = []
         total_price = 0
+
         for item in restaurant.menu_list['data']:
             item_name = item['name']
             item_data = request.POST.get(item_name, '')
+
             if item_data:
                 item_amount = int(item_data)
                 item_price = float(item['price'])
                 order_item = {
-                    'id': item.get('id', 1), 
+                    'id': item.get('id', 1),
                     'name': item_name,
                     'amount': item_amount,
                     'price': item_price,
@@ -82,19 +105,27 @@ def order_menu(request, id):
                 order_items.append(order_item)
                 total_price += item_amount * item_price
 
-        company_id = user_info.get('company', 1) 
-        company = get_object_or_404(Company, id=company_id) 
+        company_id = user_info.get('company', 1)
+        company = get_object_or_404(Company, id=company_id)
 
         new_order = Order.objects.create(
             items=order_items,
             order_value=total_price,
             restaurant=restaurant,
-            member=member_id, 
-            company=company, 
+            member=member_id,
+            company=company,
             status='submitted',
             last_update_time=timezone.now()
         )
+
+        orders = restaurant.orders.get('orders', [])  # 获取 orders 字段的值，如果不存在则使用空列表
+        orders.append(new_order.id)
+        restaurant.orders['orders'] = orders  # 将更新后的列表赋值回 orders 字段
+        restaurant.save()
+
+
         return redirect('check_order', order_id=new_order.id)
+
     else:
         context = {
             'member': member_id,
@@ -190,7 +221,6 @@ def add_menu_item(request):
                 "name": item_name,
                 "price": item_price,
                 "tag": item_tag,
-                # "photo": "/image"+ uploaded_file_url, 
                 **({"photo": "/image" + uploaded_file_url} if uploaded_file_url else {}),
                 "status": "on",
                 "id": new_item_id
@@ -226,7 +256,7 @@ def search_restaurants(request):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         query = request.GET.get('term', '')
         restaurants = Restaurant.objects.filter(name__icontains=query)
-        results = [{'id': restaurant.id, 'label': restaurant.name} for restaurant in restaurants]
+        results = [{'id': restaurant.id, 'name': restaurant.name ,'space_id': restaurant.space_id, 'phone_number': restaurant.phone_number ,'line_id': restaurant.line_id, 'created_at': restaurant.created_at ,} for restaurant in restaurants]
         return JsonResponse(results, safe=False)
     return JsonResponse({'error': 'Not Ajax request'}, status=400)
 
@@ -255,13 +285,17 @@ def delete_all_orders(request):
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
 
-def delete_order(request, order_id):
-    order = get_object_or_404(OrderForm, id=order_id)
+def delete_order(request):
+    order_id = request.POST.get('order_id')
+    print(order_id)
+    order = get_object_or_404(Order, id=order_id)
     try:
+        print('order_delete')
         order.delete()
         return JsonResponse({'message': 'Restaurant has been successfully deleted.'}, status=200)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
+    
 from .forms import CompanyForm
 
 def company_list(request):
@@ -286,7 +320,9 @@ def check_order(request, order_id):
     order = get_object_or_404(Order, id=order_id)
     if request.method == 'POST':
         if 'edit' in request.POST:
-            return redirect('edit_order', order_id=order.id)
+            order.status = 'completed'
+            order.save()
+            return redirect('home')
         elif 'complete' in request.POST:
             order.status = 'completed'
             order.save()
@@ -313,11 +349,12 @@ def order_completed(request, order_id):
 
 @jwt.jwt_required
 def order_list(request):
-    orders = Order.objects.all()
+    user_name = request.user_info['name']
+    orders = Order.objects.filter(member=user_name).order_by('-created_at')
+    restaurants = Restaurant.objects.all()
     orders_with_member_name = []
-
     for order in orders:
-        member_name = Member.objects.filter(name=order.member).first().name if Member.objects.filter(name=order.member).exists() else "未知會員"
+        member_name = order.member if order.member !=None else "未知會員"
         order_data = {
             'id': order.id,
             'items': order.items,
@@ -331,8 +368,7 @@ def order_list(request):
             'created_at': order.created_at
         }
         orders_with_member_name.append(order_data)
-
-    return render(request, 'order_list.html', {'orders': orders_with_member_name})
+    return render(request, 'order_list.html', {'orders': orders_with_member_name, 'restaurants': restaurants})
 
 
 
@@ -350,7 +386,8 @@ def admin_home(request):
         else:
             raise ValueError('請輸入正確的餐廳名稱')
     else:
-        restaurant = Restaurant.objects.all
+        restaurant = Restaurant.objects.all().values()
+        print(restaurant)
         return render(request, 'admin_home.html', {"restaurants": restaurant})
 
 def get_restaurants_by_area(request):
@@ -366,3 +403,39 @@ def get_restaurants_by_area(request):
         print("All restaurants data:", list(restaurants))  
 
         return JsonResponse(list(restaurants), safe=False)
+    
+
+@jwt.jwt_required
+def order_manage(request):
+    orders = Order.objects.all().order_by('-created_at')
+    restaurants = Restaurant.objects.all()
+    orders_with_member_name = []
+
+    for order in orders:
+        member_name = order.member if order.member !=None else "未知會員"
+        order_data = {
+            'id': order.id,
+            'items': order.items,
+            'order_value': order.order_value,
+            'restaurant_name': order.restaurant.name,
+            'member_name': member_name,
+            'company': order.company,
+            'status': order.status,
+            'last_update_time': order.last_update_time,
+            'updated_at': order.updated_at,
+            'created_at': order.created_at
+        }
+        orders_with_member_name.append(order_data)
+    return render(request, 'order_manage.html', {'orders': orders_with_member_name, 'restaurants':restaurants})
+
+def complete_order(request):
+    order_id = request.POST.get('order_id')
+    if order_id:
+        try:
+            order = Order.objects.get(id=order_id)
+            order.status = 'completed'
+            order.save()
+            return JsonResponse({'message': 'Order marked as complete'}, status=200)
+        except Order.DoesNotExist:
+            return JsonResponse({'error': 'Order not found'}, status=404)
+    return JsonResponse({'error': 'Invalid request'}, status=400)

@@ -1,0 +1,100 @@
+body {
+    font-family: Arial, sans-serif; /* 使用無襯線字體提升閱讀性 */
+    margin: 0;
+    padding: 20px;
+    background-color: #f4f4f4; /* 輕微的背景顏色 */
+}
+
+#restaurantFilter {
+    padding: 12px 15px;
+    border: 2px solid #007bff; 
+    border-radius: 100px;
+    background-color: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    cursor: pointer;
+    font-size: 16px; 
+    width: auto; 
+    display: inline-block; 
+}
+
+button, .btn {
+    display: inline-block;
+    padding: 10px 20px;
+    margin-right: 10px;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.add-btn, .delete-btn, .update-btn {
+    text-align: center;
+}
+
+
+
+a {
+    color: inherit;
+    text-decoration: none; 
+}
+
+h1 {
+    text-align: center;
+}
+
+#restaurant-list {
+    list-style: none; /* 去除列表點 */
+    padding: 0;
+}
+
+li {
+    background: white; /* 每個列表項目的背景色 */
+    margin-bottom: 10px; /* 列表項目間隔 */
+    padding: 10px;
+    border-radius: 5px; /* 圓角邊框 */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* 陰影效果 */
+}
+
+input[type="text"] {
+    width: calc(100% - 40px); /* 輸入框寬度 */
+    padding: 10px;
+    margin: 20px auto;
+    display: block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+button, .btn {
+    display: inline-block;
+    padding: 10px 20px;
+    margin-right: 10px;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none; /* 移除超鏈接下劃線 */
+}
+
+button:hover, .btn:hover {
+    background-color: #0056b3;
+}
+
+.add-btn, .delete-btn, .update-btn {
+    text-align: center;
+}
+
+.delete-all-btn {
+    background-color: #dc3545; /* 紅色背景表示危險操作 */
+}
+
+.delete-all-btn:hover {
+    background-color: #c82333;
+}
+
+a {
+    color: inherit; /* 讓鏈接的顏色與其父元素相同 */
+    text-decoration: none; /* 去除下劃線 */
+}

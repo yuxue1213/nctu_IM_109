@@ -3,7 +3,6 @@ from django.db.models import JSONField
 
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
-
 class AccountManager(BaseUserManager):
     def create_user(self, account, password=None, **extra_fields):
         if not account:

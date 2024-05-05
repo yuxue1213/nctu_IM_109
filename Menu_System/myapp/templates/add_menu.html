@@ -12,6 +12,7 @@
     <div class="container mt-3">
         <h1>{{ restaurant.name }} 餐廳菜單</h1>
         <button class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#addMenuItemModal">新增餐點</button>
+        <a href="/admin_home">完成</a>
         {% for item in menu_list %}
         {% if item.status != 'delete' %}
         <div class="row mb-3 align-items-center">

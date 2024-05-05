@@ -14,11 +14,20 @@
         <label for="name">餐廳名稱: </label>
         {{ form.name }}<br>
         <label for="space_id">地點: </label>
-        {{ form.space_id }}<br>
+        <select name="space_id" id="space_id">
+            {% for i in "123456789"|make_list %}
+            <option value="{{ i }}">{{ i }}</option>
+            {% endfor %}
+        </select>
         <label for="phone_number">聯絡電話: </label>
         {{ form.phone_number }}<br>
         <label for="area">區域： </label>
-        {{ form.area }}<br>        
+        <select name="area" id="area">      
+        <option value="A">A</option>
+        <option value="B">B</option>
+        <option value="C">C</option>
+        <option value="D">D</option>
+        </select>
         <label for="line_id">Line ID: </label>
         {{ form.line_id }}<br>
         <button type="submit">新增餐廳</button>

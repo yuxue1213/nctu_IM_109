@@ -10,24 +10,51 @@
 <body>
     <h1>訂單列表</h1>
     <a href="{% url 'home'  %}">回到點餐主頁</a>
+    <div>
+        <select id="restaurantFilter">
+            <option value="">選擇餐廳</option>
+            {% for restaurant in restaurants %}
+                <option value="{{ restaurant.name }}">{{ restaurant.name }}</option>
+            {% endfor %}
+        </select>
+        <button onclick="filterOrders()">篩選</button>
+    </div>
+    <div id="restaurant-list">
         {% for order in orders %}
-        <div>
+        <div class="order-container">
             <div><p>訂單內容：</p>
                 {% for item in order.items %}
+                {% if item.amount != 0 %}
                 <a>餐點名稱：{{ item.name }}</a>
                 <a>餐點單價：{{ item.price }}</a>
                 <a>餐點數量：{{ item.amount }}</a>
                 <a>餐點分類：{{ item.tag }}</a>
                 <p></p>
+                {% endif %}
                 {% endfor %}
             </div>
             <p>會員名稱：{{ order.member_name }}</p>
             <p>訂單價格：{{ order.order_value }}</p>
-            <p>餐廳名稱：{{ order.restaurant_name }}</p>
+            <p class="restaurant-name">餐廳名稱：{{ order.restaurant_name }}</p>
             <p>訂單狀態：{{ order.status }}</p>
             <p>建立時間：{{ order.created_at }}</p>
         </div>
-        {% endfor %}        
+        {% endfor %}
+    </div>      
     <a href="{% url 'home' %}">回到點餐主頁</a>
+    <script>
+        function filterOrders() {
+            var selectedRestaurant = document.getElementById('restaurantFilter').value;
+            var orderDivs = document.querySelectorAll('#restaurant-list .order-container'); // 更新选择器以匹配新结构
+            orderDivs.forEach(function(div) {
+                var restaurantNameElement = div.querySelector('.restaurant-name'); // 直接使用类选择器
+                if (restaurantNameElement.textContent.includes(selectedRestaurant) || selectedRestaurant === '') {
+                    div.style.display = '';
+                } else {
+                    div.style.display = 'none';
+                }
+            });
+        }
+    </script>
 </body>
 </html>
