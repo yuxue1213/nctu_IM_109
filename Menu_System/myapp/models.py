@@ -3,6 +3,7 @@ from django.db.models import JSONField
 
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+#資料庫
 class AccountManager(BaseUserManager):
     def create_user(self, account, password=None, **extra_fields):
         if not account:
@@ -53,6 +54,11 @@ class Company(models.Model):
     name = models.CharField(max_length=255)
     members = JSONField(default=list)
     orders = JSONField(default=list)
+    
+    def __str__(self):
+        return self.name
+
+
 
 class Member(models.Model):
     name = models.CharField(max_length=255)

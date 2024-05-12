@@ -42,8 +42,10 @@
         <form method="post" style="margin-top: 20px;">
             {% csrf_token %}
             <div class="btn-group">
+                <!-- <button type="submit" name="edited" class="btn btn-secondary">編輯此訂單</button> -->
                 <button type="submit" name="edit" class="btn btn-secondary">新增其他餐廳</button>
                 <button type="submit" name="complete" class="btn btn-success">完成訂單</button>
+                <button type="submit" name="cancel" class="btn btn-success">取消訂單</button>
             </div>
         </form>
     </div>

@@ -18,9 +18,16 @@ def register(request):
         form = RegisterForm(request.POST)
         if form.is_valid():
             form.save()
+            name = request.POST.get('name')
+            company_id = request.POST.get('company')
+            print( company_id)
+            company = get_object_or_404(Company, id=company_id)
+            company_members = company.members
+            print(company_members)
+            member = Member(name=user_name, company=company)
+            member.save()
             return redirect('login')
         else:
-
             return render(request, 'register.html', {'form': form})
     else:
         form = RegisterForm()
@@ -37,7 +44,6 @@ def user_login(request):
             response = redirect('home')
             response.set_cookie(key='jwt', value=token, httponly=True, samesite='Lax')
             return response
-
     else:
         form = CustomAuthForm()
 
@@ -49,17 +55,14 @@ def admin_login(request):
         if form.is_valid():
             user = form.get_user()
             login(request, user)
-
             token = jwt.generate_jwt(user)
             response = redirect('admin_home')
             response.set_cookie(key='jwt', value=token, httponly=True, samesite='Lax')
             return response
-
     else:
         form = CustomAuthForm()
 
     return render(request, 'admin_login.html', {'form': form})
-
 
 @jwt.jwt_required
 def select_restaurant(request):
@@ -118,14 +121,12 @@ def order_menu(request, id):
             last_update_time=timezone.now()
         )
 
-        orders = restaurant.orders.get('orders', [])  # 获取 orders 字段的值，如果不存在则使用空列表
+        orders = restaurant.orders.get('orders', [])  
         orders.append(new_order.id)
-        restaurant.orders['orders'] = orders  # 将更新后的列表赋值回 orders 字段
+        restaurant.orders['orders'] = orders  
         restaurant.save()
 
-
         return redirect('check_order', order_id=new_order.id)
-
     else:
         context = {
             'member': member_id,
@@ -134,7 +135,8 @@ def order_menu(request, id):
             'order_item_tag': order_item_tag
         }
         return render(request, 'order_menu.html', context)
-
+    
+@jwt.jwt_required
 def create_restaurant(request):
     if request.method == 'POST':
         form = RestaurantCreateForm(request.POST)
@@ -151,6 +153,7 @@ def create_restaurant(request):
         form = RestaurantCreateForm()
     return render(request, 'create_restaurant.html', {'form': form})
 
+@jwt.jwt_required
 def add_menu_list(request, restaurant_id):
     restaurant = get_object_or_404(Restaurant, id=restaurant_id)
     menu_list = restaurant.menu_list if isinstance(restaurant.menu_list, dict) else {}
@@ -321,6 +324,10 @@ def check_order(request, order_id):
     if request.method == 'POST':
         if 'edit' in request.POST:
             order.status = 'completed'
+            order.save()
+            return redirect('home')
+        elif 'cancel' in request.POST:
+            order.status = 'cancel'
             order.save()
             return redirect('home')
         elif 'complete' in request.POST:

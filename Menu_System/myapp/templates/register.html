@@ -13,8 +13,8 @@
     <h2 class="mb-3">註冊</h2>
     <form method="post" class="needs-validation" novalidate>
         <div class="form-group">
-        {% csrf_token %}
-        {{ form.as_p }}
+            {% csrf_token %}
+            {{ form.as_p }}   
         </div>
         <button type="submit" class="btn btn-primary">註冊</button>
     </form>

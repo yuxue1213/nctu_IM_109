@@ -1,5 +1,5 @@
 from django import forms
-from .models import Restaurant, Account, Order
+from .models import Restaurant, Account, Order, Company
 from django.contrib.auth.forms import AuthenticationForm,UserCreationForm
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
@@ -14,9 +14,11 @@ class CustomAuthForm(AuthenticationForm):
         return account
     
 class RegisterForm(UserCreationForm):
+    company = forms.ModelChoiceField(queryset=Company.objects.all(), required=False, empty_label="Choose a company")
+
     class Meta:
         model = User
-        fields = ('name', 'account', 'password1', 'password2', 'phone_number')
+        fields = ('name', 'account', 'password1', 'password2', 'company')
 
     def clean_account(self):
         account = self.cleaned_data.get('account')
@@ -26,6 +28,7 @@ class RegisterForm(UserCreationForm):
 
     def save(self, commit=True):
         user = super().save(commit=False)
+        user.company = self.cleaned_data.get('company')
         user.set_password(self.cleaned_data["password1"])
         if commit:
             user.save()
