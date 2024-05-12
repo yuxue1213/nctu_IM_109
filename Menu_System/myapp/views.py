@@ -94,6 +94,7 @@ def order_menu(request, id):
         for item in restaurant.menu_list['data']:
             item_name = item['name']
             item_data = request.POST.get(item_name, '')
+            item_note = request.POST.get(item_name + '_note', '')
 
             if item_data:
                 item_amount = int(item_data)
@@ -104,6 +105,7 @@ def order_menu(request, id):
                     'amount': item_amount,
                     'price': item_price,
                     'tag': item['tag'],
+                    'note': item_note,
                 }
                 order_items.append(order_item)
                 total_price += item_amount * item_price
