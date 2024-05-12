@@ -22,56 +22,64 @@
         .horizontal-menu li:last-child {
             margin-right: 0;
         }
-    
+
         .vertical-list {
             list-style-type: none;
             margin: 20px 0;
             padding: 0;
+            width: 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
-            width: 100%;
         }
         .vertical-list li {
             margin: 10px 0;
-            background-color: white; /* 设置白色背景 */
-            padding: 15px; /* 添加一些内边距 */
-            border: 2px solid #ccc; /* 可选的边框 */
-            min-width: 1000px;
+            background-color: white; /* 設置白色背景 */
+            padding: 15px; /* 添加一些內邊距 */
+            border: 2px solid #ccc; /* 可選的邊框 */
         }
-    
+
         a {
             text-decoration: none;
             color: black;
         }
-    
+
         #detail-map-container img {
             max-width: 1000px;
             max-height: 800px;
             width: auto;
             height: auto;
         }
+
+        #restaurants-container {
+            max-height: 400px; /* 設置最大高度 */
+            overflow-y: auto; /* 啟用垂直捲動 */
+            margin-top: 20px; /* 添加一些上邊距 */
+        }
     </style>
-</head>
 <body>
-    <h2>勘益點餐系統</h2>
-    <a href="/admin_home">後臺</a>
-    <ul class="horizontal-menu">
-        <li><a href="#">1. 選擇餐廳</a></li>
-        <li><a href="#">2. 選擇餐點及數量</a></li>
-        <li><a href="#">3. 確認訂單</a></li>
-        <li><a href="#">4. 完成訂單</a></li>
-    </ul>
-    <div id="detail-map-container">
-        <img src="{% static 'image/main_map.png' %}" usemap="#main-map" alt="Main Map">
-        <map name="main-map">
-            <area shape="rect" coords="350,200,500,400" href="#" alt="Area A" onclick="showDetailMap('A');">
-            <area shape="rect" coords="310,000,510,100" href="#" alt="Area B" onclick="showDetailMap('B');">
-            <area shape="rect" coords="250,200,350,400" href="#" alt="Area C" onclick="showDetailMap('C');">
-            <area shape="rect" coords="520,200,720,400" href="#" alt="Area D" onclick="showDetailMap('D');">
-        </map>
+    <div class="container-fluid mt-5">
+        <h2>勤益點餐系統</h2>
+        <a href="/admin_home">後臺</a>
+        <ul class="horizontal-menu">
+            <li><a href="#">1. 選擇餐廳</a></li>
+            <li><a href="#">2. 選擇餐點及數量</a></li>
+            <li><a href="#">3. 確認訂單</a></li>
+            <li><a href="#">4. 完成訂單</a></li>
+        </ul>
+        <div id="detail-map-container">
+            <img src="{% static 'image/main_map.png' %}" usemap="#main-map" alt="Main Map">
+            <map name="main-map">
+                <area shape="rect" coords="350,200,500,400" href="#" alt="Area A" onclick="showDetailMap('A');">
+                <area shape="rect" coords="310,000,510,100" href="#" alt="Area B" onclick="showDetailMap('B');">
+                <area shape="rect" coords="250,200,350,400" href="#" alt="Area C" onclick="showDetailMap('C');">
+                <area shape="rect" coords="520,200,720,400" href="#" alt="Area D" onclick="showDetailMap('D');">
+            </map>
+        </div>
+        <div id="restaurants-container">
+            <div id="restaurants-list" class="vertical-list"></div>
+        </div>
     </div>
-    <div id="restaurants-list" class="vertical-list"></div>
 </body>
    <script>
 function showDetailMap(area) {
