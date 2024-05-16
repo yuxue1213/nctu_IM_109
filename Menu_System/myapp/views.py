@@ -16,15 +16,15 @@ from django.core.files.storage import FileSystemStorage
 def register(request):
     if request.method == 'POST':
         form = RegisterForm(request.POST)
+        print(form)
         if form.is_valid():
             form.save()
             user_name = request.POST.get('name')
             company_id = request.POST.get('company')
-            print( company_id)
+            print(company_id)
             company = get_object_or_404(Company, id=company_id)
-            company_members = company.members
-            print(company_members)
-            member = Member(name=user_name, company=company)
+            member = Member(name=user_name, company=company,orders=[])
+            print(member)
             member.save()
             return redirect('login')
         else:
