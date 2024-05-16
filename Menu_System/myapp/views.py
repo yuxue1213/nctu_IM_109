@@ -18,7 +18,7 @@ def register(request):
         form = RegisterForm(request.POST)
         if form.is_valid():
             form.save()
-            name = request.POST.get('name')
+            user_name = request.POST.get('name')
             company_id = request.POST.get('company')
             print( company_id)
             company = get_object_or_404(Company, id=company_id)
