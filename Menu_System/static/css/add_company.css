@@ -1,65 +1,71 @@
-
-    body, html {
-        margin: 0;
-        padding: 0;
-        height: 100%;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        background-color: #f8f9fa;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        text-align: center;
-    }
-
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+  
+  .wrapper {
+    width: 100%;
+    max-width: 360px;
+    background-color: #ffffff;
+    padding: 40px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    margin: 20px;
+  }
+  
+  h1 {
+    color: #333;
+    margin-bottom: 30px;
+  }
+  
+  form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  input, button, select, textarea {
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  button:hover {
+    background-color: #45a049;
+  }
+  
+  a {
+    display: block;
+    color: #0077ff;
+    margin-top: 20px;
+    text-decoration: none;
+  }
+  
+  a:hover {
+    text-decoration: underline;
+  }
+  
+  @media screen and (max-width: 480px) {
     .wrapper {
-        width: 100%;
-        max-width: 360px;
-        background-color: #ffffff;
-        padding: 40px;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-        border-radius: 8px;
-        margin: 20px;
+      padding: 20px;
     }
-
-    h1 {
-        color: #333;
-        margin-bottom: 30px;
-    }
-
-    form {
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-
-    input, button, select, textarea {
-        padding: 10px;
-        margin-bottom: 15px; 
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        width: calc(100% - 20px); 
-    }
-
-    button {
-        background-color: #4CAF50;
-        color: white;
-        border: none;
-        cursor: pointer;
-        transition: background-color 0.3s;
-    }
-
-    button:hover {
-        background-color: #45a049;
-    }
-
-    a {
-        display: block;
-        color: #0077ff;
-        margin-top: 20px; 
-        text-decoration: none;
-    }
-
-    a:hover {
-        text-decoration: underline;
-    }
+  }

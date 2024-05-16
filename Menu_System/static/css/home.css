@@ -6,87 +6,105 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-}
-
-.header {
+  }
+  
+  .header {
     display: flex;
     flex-direction: column;
     align-items: center;
     margin-bottom: 20px;
-}
-
-h1, h2 {
+  }
+  
+  h1, h2 {
     text-align: center;
     color: #333;
     margin-top: 30px;
     margin-bottom: 10px;
-}
-
-input[type="text"] {
+  }
+  
+  input[type="text"] {
     margin-bottom: 20px;
     padding: 10px;
-    width: 300px;
+    width: 100%;
+    max-width: 300px;
     border: 1px solid #ccc;
     border-radius: 4px;
     font-size: 16px;
-}
-
-div {
+    box-sizing: border-box;
+  }
+  
+  div {
     text-align: center;
     font-weight: bold;
     font-size: 18px;
     color: #555;
     margin-bottom: 10px;
-}
-
-#restaurant-list {
+  }
+  
+  #restaurant-list {
     list-style-type: none;
     padding: 0;
     margin: 0;
-    width: 400px;
+    width: 100%;
+    max-width: 400px;
     border: 1px solid #ccc;
     border-radius: 4px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-#restaurant-list li {
+  }
+  
+  #restaurant-list li {
     background-color: #fff;
     padding: 10px;
     border-bottom: 1px solid #ccc;
-}
-
-#restaurant-list li:last-child {
+  }
+  
+  #restaurant-list li:last-child {
     border-bottom: none;
-}
-
-#restaurant-list li a {
+  }
+  
+  #restaurant-list li a {
     text-decoration: none;
     color: #333;
-}
-
-#restaurant-list li a:hover {
+  }
+  
+  #restaurant-list li a:hover {
     color: #666;
-}
-
-ul {
-    list-style-type: none; /* 移除列表点 */
-    padding: 0; 
-    margin: 0; 
-    display: flex; 
-    justify-content: center; 
-}
-
-li {
+  }
+  
+  ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  
+  li {
     margin-right: 20px;
-    display: inline-block;
-}
-
-li:last-child {
+    margin-bottom: 10px;
+  }
+  
+  li:last-child {
     margin-right: 0;
-}
-
-a {
-    text-decoration: none; 
-    color: black; 
+  }
+  
+  a {
+    text-decoration: none;
+    color: black;
     font-size: 16px;
-}
+  }
+  
+  @media screen and (max-width: 600px) {
+    input[type="text"] {
+      max-width: 100%;
+    }
+  
+    #restaurant-list {
+      max-width: 100%;
+    }
+  
+    li {
+      margin-right: 10px;
+    }
+  }
